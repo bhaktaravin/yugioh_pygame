@@ -1,11 +1,23 @@
 import sys
 import os 
-from menu.menu import show_menu 
-
+from menu.game import Game
+from background.downloader import GettingImages
 
 
 def main(): 
-    show_menu() 
+    game = Game() 
+    game.run()
+    downloader()
+
+####################################  GETTING IMAGES FROM WIKIPEDIA  ####################
+
+def downloader(): 
+        print("Downloading images...")
+
+        GettingImages.download_card_images()
+        print("Download complete.")
+
+##########################################################################################
 
 if __name__ == "__main__": 
     main() 

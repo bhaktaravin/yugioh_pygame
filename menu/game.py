@@ -4,6 +4,7 @@ import os
 from menu.background.card_manager import CardManager
 from listofcards.getting_all_cards import *
 from database.db import load_cards_from_file
+from background.downloader import GettingImages
 
 # Global constants
 WIDTH, HEIGHT = 800, 600
@@ -50,7 +51,24 @@ class Game:
         self.custom_theme.background_color = (0, 0, 0, 0)
         self.menu = pygame_menu.Menu('Yu-Gi-Oh! Duel Menu', WIDTH, HEIGHT, theme=self.custom_theme)
         self.menu.add.button('Start Game', self.start_game)
+        self.menu.add.button('Load Game', self.load_game)
+        self.menu.add.button('Deck Builder', self.deckbuilder)
         self.menu.add.button('Quit', pygame_menu.events.EXIT)
+
+
+################################### LOAD GAME METHOD #################
+    def load_game(self):
+        pass
+
+
+################################### DECK BUILDER METHOD #################
+    def deckbuilder(self):
+        self.deckbuilder_menu = pygame_menu.Menu('Deck Builder', WIDTH, HEIGHT, theme=self.custom_theme)
+        self.deckbuilder_menu.add.button('Back', self.menu)
+        self.deckbuilder_menu.mainloop(self.screen)
+
+
+######################################################################################
 
 ################################### START GAME METHOD #################
     def start_game(self):
@@ -81,6 +99,7 @@ class Game:
             self.card_manager.update()
             self.card_manager.draw(self.screen)
 
+
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
@@ -103,3 +122,4 @@ class Game:
         sys.exit()
 
 ######################################################################
+
