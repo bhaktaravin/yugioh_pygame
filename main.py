@@ -8,11 +8,12 @@ from background.downloader import GettingImages
 CARD_IMAGE_FOLDER = "card_images"
 YGOPRO_API = "https://db.ygoprodeck.com/api/v7/cardinfo.php?"
 
+
 # Common Yu-Gi-Oh! words that should be separated
 KNOWN_WORDS = {"of", "the", "and", "dragon", "magician", "knight", "lord", "dark", "light", "beast", "king", "queen", "guardian"}
 
-def main():
-    downloader()
+
+def main(): 
 
     print("Cards have been downloaded... You may start the game.")
 
