@@ -4,10 +4,14 @@ import os
 import pygame
 import pandas as pd
 from supabase import create_client, Client
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Supabase configuration
-SUPABASE_URL = "https://toonzkjgytoknfruuqvo.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvb256a2pneXRva25mcnV1cXZvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDAwNTg1MCwiZXhwIjoyMDc5NTgxODUwfQ.EI-xRmpx7PyIohLVv5XT06Yh4OwiWVYHEHEEVcsVE4g"
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 STORAGE_BUCKET = "yugioh-cards"
 
 # Initialize Supabase client

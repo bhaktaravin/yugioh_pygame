@@ -1,8 +1,12 @@
 from supabase import create_client, Client
 import os
+from dotenv import load_dotenv
 
-SUPABASE_URL = "https://toonzkjgytoknfruuqvo.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvb256a2pneXRva25mcnV1cXZvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDAwNTg1MCwiZXhwIjoyMDc5NTgxODUwfQ.EI-xRmpx7PyIohLVv5XT06Yh4OwiWVYHEHEEVcsVE4g"
+# Load environment variables
+load_dotenv()
+
+SUPABASE_URL = os.getenv('SUPABASE_URL')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def upload_image(local_path, storage_path):
