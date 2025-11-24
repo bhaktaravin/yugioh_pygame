@@ -1,0 +1,6 @@
+pygame 
+pygame_menu
+bs4
+requests
+pandas
+openpyxl
