@@ -16,7 +16,7 @@ def find_excel_file(filename, search_path="."):
 
 def grab_worksheet_of_monsters(filename, search_path="."):
     """
-    Load monster cards from the 'Monster' worksheet.
+    Load monster cards from the 'Monsters' worksheet.
     
     Expected columns:
     - Number, Name, Deck Cost, Attribute, Type, Level, ATK, DEF, Effect, Image URL
@@ -27,7 +27,7 @@ def grab_worksheet_of_monsters(filename, search_path="."):
         return pd.DataFrame()
     
     try:
-        df = pd.read_excel(file_path, sheet_name='Monster')
+        df = pd.read_excel(file_path, sheet_name='Monsters')
         print(f"Loaded {len(df)} monster cards")
         return df
     except Exception as e:
