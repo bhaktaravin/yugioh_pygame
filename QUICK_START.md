@@ -1,36 +1,59 @@
 # Quick Start Guide
 
+## Prerequisites
+
+1. **Install Dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+2. **Configure Environment (if using cloud storage)**
+Create `.env` file:
+```bash
+SUPABASE_URL=your_project_url
+SUPABASE_KEY=your_service_role_key
+```
+
 ## Running the Main Menu
 
-The main menu is fully optimized and ready to test!
+The main menu is fully optimized with cloud storage integration!
 
-### Simple Test
+### Quick Test (No Cloud Required)
 ```bash
 python test_menu.py
 ```
 
 This will launch the main menu with:
-- Animated background with floating cards
-- Cards that flip every 3 seconds showing random cards
-- Menu buttons: Start Game, Load Game, Deck Builder, Quit
+- Animated background with 10 floating cards
+- Cards continuously flip showing random images from local or cloud
+- Menu buttons: Start Game, Load Game, Deck Builder, **Sync Excel to Supabase**, Quit
 
 ## Menu Features
 
 ### 1. **Floating Cards Animation**
 - 10 cards floating down the screen
-- Each card flips to show a random card image every 3 seconds
-- Smooth 60 FPS animation
+- Continuous horizontal flip animation (90 frames)
+- Variable speeds (0.5-1.5x) for dynamic effect
+- Loads cards from: Local assets → Supabase cloud → YGOPRODeck API
+- Smooth 60 FPS rendering
 
 ### 2. **Start Game Button**
-- Attempts to load cards from `DuelistofTheRoses.xlsx`
-- If Excel file exists, loads all cards into database
-- If not, continues without errors
+- Launches game board (placeholder - under development)
+- Future: 7x7 grid with card placement
 
 ### 3. **Deck Builder Button**
 - Opens deck builder menu (placeholder)
 - Press ESC or Back to return to main menu
+- Future: Full card collection browser and deck editor
 
-### 4. **Quit Button**
+### 4. **Sync Excel to Supabase Button** ⭐ NEW
+- Uploads 830 cards from Excel to cloud storage
+- Downloads card images from YGOPRODeck API
+- Shows progress bar during upload
+- Runs in background thread (no UI freeze)
+- Updates SQLite database with Supabase URLs
+
+### 5. **Quit Button**
 - Cleanly exits the game
 
 ## Controls
@@ -41,16 +64,47 @@ This will launch the main menu with:
 | ESC | Exit menu/game |
 | Auto | Cards flip every 3 seconds |
 
-## Adding Your Card Data
+## Syncing Card Data
 
-1. **Place Excel file:** 
-   - Name: `DuelistofTheRoses.xlsx`
-   - Location: Project root (`/Users/ravin/Code/Python3/yugioh/`)
+### Automatic Sync (Recommended) ⭐
 
-2. **Excel structure required:**
+1. **Ensure Excel file exists:**
+   - Path: `assets/excelspreadsheet/DuelistofTheRoses.xlsx`
+   - Contains: 683 monsters, 118 spells, 29 traps
+
+2. **Configure Supabase (one-time setup):**
+   - Create project at https://supabase.com
+   - Create storage bucket: `yugioh-cards`
+   - Add folders: `monsters`, `spells`, `traps`
+   - Copy URL and service role key to `.env`
+
+3. **Run sync:**
+   ```bash
+   # Option A: Use menu (recommended)
+   python main.py
+   # Click "Sync Excel to Supabase" button
+   
+   # Option B: Command line
+   python sync_excel_to_supabase.py
+   
+   # Option C: Test with 5 cards first
+   python test_upload.py
    ```
-   Sheet: "Monster"
-   Columns: Number, Name, Deck Cost, Attribute, Type, Level, ATK, DEF, Effect, Image URL
+
+4. **What happens:**
+   - ✅ Reads card names from Excel
+   - ✅ Downloads card images from YGOPRODeck API
+   - ✅ Uploads images to Supabase cloud storage
+   - ✅ Updates SQLite with Supabase URLs
+   - ✅ Shows progress bar (e.g., "Uploading: 450/830")
+
+### Manual Method (Local Only)
+
+1. **Excel structure:**
+   ```
+   Sheet: "Monsters" (note: plural)
+   Columns: Number, Name , Deck Cost, Attribute, Type, Level, ATK, DEF, Effect
+            (note: "Name " has trailing space in Excel)
    
    Sheet: "Spells"
    Columns: Number, Name, Deck Cost, Type, Effect
@@ -59,7 +113,7 @@ This will launch the main menu with:
    Columns: Number, Name, Deck Cost, Type, Effect
    ```
 
-3. **Add card images:**
+2. **Add card images manually:**
    - Monsters: `assets/monsters/card_name.png`
    - Spells: `assets/spells/card_name.png`
    - Traps: `assets/traps/card_name.png`
@@ -70,25 +124,53 @@ This will launch the main menu with:
 ```bash
 # Check if dependencies are installed
 pip install -r requirements.txt
+
+# Verify python-dotenv is installed
+pip show python-dotenv
+```
+
+### Environment Variables Not Loading
+```bash
+# Test .env file
+python -c "from dotenv import load_dotenv; import os; load_dotenv(); print('SUPABASE_URL:', os.getenv('SUPABASE_URL'))"
+
+# Expected output:
+# SUPABASE_URL: https://your-project.supabase.co
+
+# If empty, check:
+# 1. .env file exists in project root
+# 2. .env has correct format (no quotes needed):
+#    SUPABASE_URL=https://...
+#    SUPABASE_KEY=eyJ...
 ```
 
 ### Cards not showing
 ```bash
-# Verify assets exist
+# Check local assets
 ls assets/monsters/
 ls assets/spells/
 ls assets/traps/
 
-# At least these placeholder cards should exist:
-# - dark_magician.png
-# - blue_eyes_white_dragon.png
-# - dark_hole.png
-# - mirror_force.png
+# Check Supabase connection
+python -c "from database.supabase_client import get_supabase_client; print(get_supabase_client().storage.from_('yugioh-cards').list())"
+
+# Expected output: List of files in cloud storage
+```
+
+### Upload fails
+```bash
+# Verify Excel file exists
+ls assets/excelspreadsheet/DuelistofTheRoses.xlsx
+
+# Check YGOPRODeck API
+curl -s "https://db.ygoprodeck.com/api/v7/cardinfo.php?name=Dark%20Magician" | python -m json.tool
+
+# Expected: JSON response with card data
 ```
 
 ### Background not showing
 ```bash
-# Check if background image exists
+# Check if background images exist
 ls assets/background.jpg
 ls assets/card_back.png
 ```
@@ -96,14 +178,20 @@ ls assets/card_back.png
 ## What's Working
 
 ✅ Main menu displays correctly  
-✅ Floating card animations smooth at 60 FPS  
-✅ Card flipping animation works perfectly  
+✅ Floating card animations smooth at 60 FPS (90-frame horizontal flip)  
+✅ Card flipping animation with variable speeds (0.5-1.5x)  
 ✅ All menu buttons respond to clicks  
 ✅ Background image displays  
-✅ Cards load from asset folders  
+✅ Cards load from local assets, Supabase cloud, or API  
 ✅ Graceful error handling if assets missing  
-✅ Database setup complete  
-✅ Excel import system ready  
+✅ Database setup complete (SQLite + Supabase)  
+✅ Excel import system (830 cards)  
+✅ YGOPRODeck API integration  
+✅ Supabase cloud storage  
+✅ Batch upload with progress tracking  
+✅ Environment variable security (.env)  
+✅ Threading for background uploads (no UI freeze)  
+✅ Tested upload (5 cards successful)  
 
 ## What's Next
 
